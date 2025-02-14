@@ -235,3 +235,56 @@ function stopTimer() {
 }
 
 window.onload = loadPlayers;
+
+// const SPREADSHEET_ID = '1YTiywG4XsRNPZgWIFCCjCSSBNhBEq2eR5MJBK2Z_NR0';
+// const SHEET_NAME = 'Sheet1';
+// const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzOx-SXuG_b9g6L-i8-V2xTqRDHx2yHPHKEdiQOK_o5cxR0CjWy-9sJvK_fL-iBvyE0/exec';
+
+// function syncToSheets() {
+//     const results = JSON.parse(localStorage.getItem('results')) || [];
+//     if (results.length === 0) {
+//         alert("Nenhum resultado para sincronizar.");
+//         return;
+//     }
+
+//     // Prepare data for Google Sheets
+//     const data = results.map(r => [
+//         r.date,
+//         r.time,
+//         r.player1,
+//         r.player2,
+//         r.score1,
+//         r.score2,
+//         r.winner
+//     ]);
+
+//     // Call the Google Apps Script to append data to the sheet
+//     googleSheetAppend(data)
+//         .then(response => {
+//             alert("Resultados sincronizados com Google Sheets!");
+//         })
+//         .catch(error => {
+//             console.error('Error:', error);
+//             alert("Erro ao sincronizar com Google Sheets.");
+//         });
+// }
+
+
+// function googleSheetAppend(data) {
+//     return new Promise((resolve, reject) => {
+//         fetch(GOOGLE_SCRIPT_URL, {
+//             method: 'POST',
+//             mode: 'no-cors',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//             body: JSON.stringify({
+//                 spreadsheetId: SPREADSHEET_ID,
+//                 sheetName: SHEET_NAME,
+//                 data: data
+//             })
+//         })
+//             .then(response => resolve(response))
+//             .catch(error => reject(error));
+//     });
+// }
