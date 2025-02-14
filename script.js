@@ -1,3 +1,4 @@
+// ficheiro js.txt
 let players = JSON.parse(localStorage.getItem('players')) || [];
 let currentGame = {
     player1: null,
@@ -26,6 +27,7 @@ function addNewPlayer() {
     if (name) {
         const photoInput = document.getElementById('player-photo-input');
         photoInput.style.display = "block";  // Exibe o campo de input de foto
+
         photoInput.onchange = function () {
             if (photoInput.files && photoInput.files[0]) {
                 const reader = new FileReader();
@@ -35,6 +37,7 @@ function addNewPlayer() {
                     localStorage.setItem('players', JSON.stringify(players));
                     loadPlayers();
                     alert("Jogador adicionado com sucesso!");
+                    photoInput.value = null; // Limpa o input para permitir adicionar a mesma foto novamente
                 };
                 reader.readAsDataURL(photoInput.files[0]);
             } else {
@@ -64,6 +67,7 @@ function editPlayer() {
                     localStorage.setItem('players', JSON.stringify(players));
                     loadPlayers();
                     alert("Jogador editado com sucesso!");
+                    photoInput.value = null; // Limpa o input
                 };
                 reader.readAsDataURL(photoInput.files[0]);
             } else {
@@ -131,10 +135,16 @@ function updateScoreboard() {
 function updateServeIndicator() {
     document.getElementById('player1').classList.remove('serving');
     document.getElementById('player2').classList.remove('serving');
+    document.getElementById('player1').querySelector('.service-indicator').style.display = 'none';
+    document.getElementById('player2').querySelector('.service-indicator').style.display = 'none';
+
     if (currentGame.serving === 'player1') {
         document.getElementById('player1').classList.add('serving');
+        document.getElementById('player1').querySelector('.service-indicator').style.display = 'block';
+
     } else {
         document.getElementById('player2').classList.add('serving');
+        document.getElementById('player2').querySelector('.service-indicator').style.display = 'block';
     }
 }
 
@@ -163,6 +173,7 @@ function saveGameResult() {
         winner: currentGame.score1 > currentGame.score2 ? currentGame.player1.name : currentGame.player2.name
     });
     localStorage.setItem('results', JSON.stringify(results));
+    // syncToSheets();
 }
 
 function resetGame() {
