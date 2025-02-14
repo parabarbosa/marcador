@@ -9,6 +9,9 @@ let currentGame = {
     serveCount: 0
 };
 
+let gameTimer; // Variável para armazenar o intervalo do cronômetro
+let gameStartTime; // Variável para armazenar o tempo de início do jogo
+
 function loadPlayers() {
     const select1 = document.getElementById('player1-select');
     const select2 = document.getElementById('player2-select');
@@ -109,6 +112,7 @@ function setFirstServer(server) {
     document.getElementById('player2-img').src = currentGame.player2.photo;
     document.getElementById('player2-name').textContent = currentGame.player2.name;
     updateServeIndicator();
+    startTimer(); // Inicia o cronômetro
 }
 
 function recordPoint(player) {
@@ -158,11 +162,15 @@ function endGame() {
     const winner = currentGame.score1 > currentGame.score2 ? currentGame.player1.name : currentGame.player2.name;
     alert(`Fim do jogo! Vencedor: ${winner}`);
     saveGameResult();
+    document.getElementById('export-csv-button').style.display = 'block'; // Mostra o botão
+    stopTimer(); // Para o cronômetro
     resetGame();
 }
 
 function saveGameResult() {
     const results = JSON.parse(localStorage.getItem('results')) || [];
+    const elapsedTime = getElapsedTime();
+    const duration = `${elapsedTime.minutes}m ${elapsedTime.seconds}s`;
     results.push({
         date: new Date().toLocaleDateString(),
         time: new Date().toLocaleTimeString(),
@@ -170,7 +178,8 @@ function saveGameResult() {
         player2: currentGame.player2.name,
         score1: currentGame.score1,
         score2: currentGame.score2,
-        winner: currentGame.score1 > currentGame.score2 ? currentGame.player1.name : currentGame.player2.name
+        winner: currentGame.score1 > currentGame.score2 ? currentGame.player1.name : currentGame.player2.name,
+        duration: duration // Adiciona a duração
     });
     localStorage.setItem('results', JSON.stringify(results));
     // syncToSheets();
@@ -180,6 +189,9 @@ function resetGame() {
     currentGame = { player1: null, player2: null, score1: 0, score2: 0, serving: null, serveCount: 0 };
     document.getElementById('player-setup').style.display = 'block';
     document.getElementById('game-interface').style.display = 'none';
+    document.getElementById('player1-score').textContent = '0'; // Reset da pontuação do Jogador 1
+    document.getElementById('player2-score').textContent = '0'; // Reset da pontuação do Jogador 2
+    document.getElementById('export-csv-button').style.display = 'none'; // Esconde o botão de exportar
     loadPlayers();
 }
 
@@ -189,15 +201,37 @@ function exportToCSV() {
         alert("Nenhum resultado para exportar.");
         return;
     }
-    const headers = ["Data", "Hora", "Jogador1", "Jogador2", "PontosJogador1", "PontosJogador2", "Vencedor"];
+    const headers = ["Data", "Hora", "Jogador1", "Jogador2", "PontosJogador1", "PontosJogador2", "Vencedor", "Duração"];
     const csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" +
-        results.map(r => `${r.date},${r.time},${r.player1},${r.player2},${r.score1},${r.score2},${r.winner}`).join("\n");
+        results.map(r => `${r.date},${r.time},${r.player1},${r.player2},${r.score1},${r.score2},${r.winner},${r.duration}`).join("\n");
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
     link.setAttribute("download", "resultados_jogos.csv");
     document.body.appendChild(link);
     link.click();
+}
+
+function startTimer() {
+    gameStartTime = new Date(); // Define o tempo de início
+    gameTimer = setInterval(updateTimer, 1000); // Atualiza a cada segundo
+}
+
+function updateTimer() {
+    const elapsedTime = getElapsedTime();
+    document.getElementById('game-duration').textContent = `Duração: ${elapsedTime.minutes}m ${elapsedTime.seconds}s`;
+}
+
+function getElapsedTime() {
+    const now = new Date();
+    const timeDiff = now.getTime() - gameStartTime.getTime();
+    const minutes = Math.floor(timeDiff / 60000);
+    const seconds = Math.floor((timeDiff % 60000) / 1000);
+    return { minutes, seconds };
+}
+
+function stopTimer() {
+    clearInterval(gameTimer); // Para o cronômetro
 }
 
 window.onload = loadPlayers;
