@@ -191,7 +191,7 @@ function resetGame() {
     document.getElementById('game-interface').style.display = 'none';
     document.getElementById('player1-score').textContent = '0'; // Reset da pontuação do Jogador 1
     document.getElementById('player2-score').textContent = '0'; // Reset da pontuação do Jogador 2
-    document.getElementById('export-csv-button').style.display = 'none'; // Esconde o botão de exportar
+    //document.getElementById('export-csv-button').style.display = 'none'; // Esconde o botão de exportar
     loadPlayers();
 }
 
